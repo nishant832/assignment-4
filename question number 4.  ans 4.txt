@@ -1,0 +1,147 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <memory>
+
+class Car {
+protected:
+    std::string model;
+    int year;
+    float price;
+
+public:
+    Car(std::string m = "Generic Car", int y = 2000, float p = 10000.0)
+        : model(m), year(y), price(p) {}
+    virtual ~Car() {
+        std::cout << "Destroying Car: " << model << std::endl;
+    }
+
+    virtual void input() {
+        std::cout << "Enter model: ";
+        std::getline(std::cin, model);
+        std::cout << "Enter year: ";
+        std::cin >> year;
+        std::cout << "Enter price: ";
+        std::cin >> price;
+        std::cin.ignore();
+    }
+
+    virtual void display() const {
+        std::cout << "Model: " << model << ", Year: " << year << ", Price: $" << price;
+    }
+};
+
+class ElectricCar : public Car {
+private:
+    float batterySize;
+
+public:
+    ElectricCar() : Car("Electric Car", 2020, 30000.0), batterySize(70.0) {}
+    ~ElectricCar() override {
+        std::cout << "Destroying Electric Car: " << model << std::endl;
+    }
+
+    void input() override {
+        Car::input();
+        std::cout << "Enter battery size (kWh): ";
+        std::cin >> batterySize;
+        std::cin.ignore();
+    }
+
+    void display() const override {
+        Car::display();
+        std::cout << ", Battery: " << batterySize << " kWh" << std::endl;
+    }
+};
+
+class GasCar : public Car {
+private:
+    float fuelCapacity;
+
+public:
+    GasCar() : Car("Gas Car", 2015, 20000.0), fuelCapacity(60.0) {}
+    ~GasCar() override {
+        std::cout << "Destroying Gas Car: " << model << std::endl;
+    }
+
+    void input() override {
+        Car::input();
+        std::cout << "Enter fuel capacity (L): ";
+        std::cin >> fuelCapacity;
+        std::cin.ignore();
+    }
+
+    void display() const override {
+        Car::display();
+        std::cout << ", Fuel Capacity: " << fuelCapacity << " L" << std::endl;
+    }
+};
+
+class HybridCar : public Car {
+private:
+    float batterySize;
+    float fuelCapacity;
+
+public:
+    HybridCar() : Car("Hybrid Car", 2022, 35000.0), batterySize(50.0), fuelCapacity(40.0) {}
+    ~HybridCar() override {
+        std::cout << "Destroying Hybrid Car: " << model << std::endl;
+    }
+
+    void input() override {
+        Car::input();
+        std::cout << "Enter battery size (kWh): ";
+        std::cin >> batterySize;
+        std::cout << "Enter fuel capacity (L): ";
+        std::cin >> fuelCapacity;
+        std::cin.ignore();
+    }
+
+    void display() const override {
+        Car::display();
+        std::cout << ", Battery: " << batterySize << " kWh, Fuel: " << fuelCapacity << " L" << std::endl;
+    }
+};
+
+int main() {
+    int n;
+    std::cout << "Enter total number of cars: ";
+    std::cin >> n;
+    std::cin.ignore();
+
+    std::vector<std::unique_ptr<Car>> cars;
+
+    for (int i = 0; i < n; ++i) {
+        int type;
+        std::cout << "Car " << i + 1 << " type: [1] Electric [2] Gasoline [3] Hybrid\nEnter choice: ";
+        std::cin >> type;
+        std::cin.ignore();
+
+        switch (type) {
+            case 1:
+                cars.push_back(std::make_unique<ElectricCar>());
+                break;
+            case 2:
+                cars.push_back(std::make_unique<GasCar>());
+                break;
+            case 3:
+                cars.push_back(std::make_unique<HybridCar>());
+                break;
+            default:
+                std::cout << "Invalid choice. Creating a generic car.\n";
+                cars.push_back(std::make_unique<Car>());
+                break;
+        }
+        std::cout << "Enter details for car " << i + 1 << ":\n";
+        cars.back()->input();
+    }
+
+    std::cout << "\n--- Fleet Information ---\n";
+    for (const auto& car : cars) {
+        car->display();
+    }
+
+    std::cout << "\n--- Cleaning up fleet ---\n";
+
+    return 0;
+}

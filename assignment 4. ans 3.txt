@@ -1,0 +1,86 @@
+#include <iostream>
+#include <string>
+
+class Car {
+protected:
+    std::string model;
+    int year;
+    float price;
+
+public:
+    Car(std::string m = "Generic Car", int y = 2000, float p = 10000.0) : model(m), year(y), price(p) {
+        std::cout << "Car constructor called for " << model << std::endl;
+    }
+
+    virtual ~Car() {
+        std::cout << "Car destructor called for " << model << std::endl;
+    }
+
+    virtual void input() {
+        std::cout << "Enter model: ";
+        std::cin >> model;
+        std::cout << "Enter year: ";
+        std::cin >> year;
+        std::cout << "Enter price: ";
+        std::cin >> price;
+        std::cin.ignore(); 
+    }
+
+    virtual void display() const {
+        std::cout << "Model: " << model << ", Year: " << year << ", Price: " << price << std::endl;
+    }
+};
+
+class CarCollection {
+private:
+    Car** cars;
+    int size;
+
+public:
+    CarCollection(int s) : size(s) {
+        cars = new Car*[size];
+        for (int i = 0; i < size; ++i) {
+            cars[i] = nullptr;
+        }
+        std::cout << "CarCollection constructor called with size " << size << std::endl;
+    }
+
+    ~CarCollection() {
+        std::cout << "CarCollection destructor called" << std::endl;
+        for (int i = 0; i < size; ++i) {
+            if (cars[i] != nullptr) {
+                delete cars[i];
+            }
+        }
+        delete[] cars;
+    }
+
+    void inputCars() {
+        for (int i = 0; i < size; ++i) {
+            cars[i] = new Car();
+            std::cout << "Enter details for car " << i + 1 << ":" << std::endl;
+            cars[i]->input();
+        }
+    }
+
+    void displayCars() const {
+        std::cout << "Cars in the collection:" << std::endl;
+        for (int i = 0; i < size; ++i) {
+            std::cout << "Car " << i + 1 << ": ";
+            cars[i]->display();
+        }
+    }
+};
+
+int main() {
+    int numCars;
+    std::cout << "Enter the number of cars you want to add: ";
+    std::cin >> numCars;
+    std::cin.ignore(); 
+
+    CarCollection collection(numCars);
+    collection.inputCars();
+    collection.displayCars();
+
+    return 0;
+}

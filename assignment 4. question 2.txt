@@ -1,0 +1,54 @@
+#include <iostream>
+#include <string>
+
+class Book {
+private:
+    std::string title;
+    std::string author;
+
+public:
+    Book(std::string t = "", std::string a = "") : title(t), author(a) {
+        std::cout << "Book constructor called for " << title << std::endl;
+    }
+
+    ~Book() {
+        std::cout << "Book destructor called for " << title << std::endl;
+    }
+
+    void display() const {
+        std::cout << "Title: " << title << ", Author: " << author << std::endl;
+    }
+};
+
+class BookShelf {
+private:
+    Book* books;
+    int size;
+
+public:
+    BookShelf(int s) : size(s) {
+        books = new Book[size];
+        for (int i = 0; i < size; ++i) {
+            books[i] = Book("Book " + std::to_string(i + 1), "Author " + std::to_string(i + 1));
+        }
+        std::cout << "BookShelf constructor called with size " << size << std::endl;
+    }
+
+    ~BookShelf() {
+        std::cout << "BookShelf destructor called" << std::endl;
+        delete[] books;
+    }
+
+    void displayBooks() const {
+        std::cout << "Books in the shelf:" << std::endl;
+        for (int i = 0; i < size; ++i) {
+            books[i].display();
+        }
+    }
+};
+
+int main() {
+    BookShelf shelf(3);
+    shelf.displayBooks();
+    return 0;
+}

@@ -1,0 +1,42 @@
+#include <iostream>
+
+class Complex {
+private:
+    double real, imag;
+public:
+    // Constructor
+    Complex(double r = 0, double i = 0) : real(r), imag(i) {}
+
+    // Operator overloading
+    Complex operator+(const Complex& other) const {
+        return Complex(real + other.real, imag + other.imag);
+    }
+
+    Complex operator-(const Complex& other) const {
+        return Complex(real - other.real, imag - other.imag);
+    }
+
+    Complex operator/(const Complex& other) const {
+        double denominator = other.real * other.real + other.imag * other.imag;
+        double new_real = (real * other.real + imag * other.imag) / denominator;
+        double new_imag = (imag * other.real - real * other.imag) / denominator;
+        return Complex(new_real, new_imag);
+    }
+
+    // Friend function to overload << for formatted output
+    friend std::ostream& operator<<(std::ostream& out, const Complex& c) {
+        out << c.real << (c.imag >= 0 ? " + " : " - ") << std::abs(c.imag) << "i";
+        return out;
+    }
+};
+
+int main() {
+    Complex c1(4, 5), c2(2, -3);
+    std::cout << "c1 = " << c1 << std::endl;
+    std::cout << "c2 = " << c2 << std::endl;
+    std::cout << "Sum = " << c1 + c2 << std::endl;
+    std::cout << "Difference = " << c1 - c2 << std::endl;
+    std::cout << "Quotient = " << c1 / c2 << std::endl;
+
+    return 0;
+}
