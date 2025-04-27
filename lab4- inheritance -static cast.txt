@@ -1,0 +1,286 @@
+#include <iostream>
+#include <iomanip> // For formatting output
+
+using namespace std;
+
+class Complex {
+private:
+    double real;
+    double imag;
+
+public:
+    // Constructor
+    Complex(double r = 0.0, double i = 0.0) : real(r), imag(i) {}
+
+    // Overload + operator
+    Complex operator+(const Complex& other) const {
+        return Complex(real + other.real, imag + other.imag);
+    }
+
+    // Overload - operator
+    Complex operator-(const Complex& other) const {
+        return Complex(real - other.real, imag - other.imag);
+    }
+
+    // Overload / operator
+    Complex operator/(const Complex& other) const {
+        double denominator = other.real * other.real + other.imag * other.imag;
+        if (denominator == 0) {
+            cout << "Error: Division by zero!" << endl;
+            return Complex(0, 0); // Or you might want to throw an exception
+        }
+        return Complex(
+            (real * other.real + imag * other.imag) / denominator,
+            (imag * other.real - real * other.imag) / denominator
+        );
+    }
+
+    // Friend function to overload << operator
+    friend ostream& operator<<(ostream& os, const Complex& c) {
+        os << fixed << setprecision(6) << c.real;
+        if (c.imag >= 0) {
+            os << "+" << fixed << setprecision(6) << c.imag << "i";
+        } else {
+            os << fixed << setprecision(6) << c.imag << "i";
+        }
+        return os;
+    }
+};
+
+int main() {
+    Complex c1(4, 5), c2(2, -3);
+
+    cout << "c1 = " << c1 << endl;
+    cout << "c2 = " << c2 << endl;
+    cout << "Sum = " << c1 + c2 << endl;
+    cout << "Difference = " << c1 - c2 << endl;
+    cout << "Quotient = " << c1 / c2 << endl;
+
+    return 0;
+}
+
+
+
+CODE FOR QUESTION 2:
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Book {
+private:
+    string title;
+    int pages;
+
+public:
+    // Constructor
+    Book(string t = "Untitled", int p = 0) : title(t), pages(p) {
+        cout << "Constructor: \"" << title << "\" with " << pages << " pages\n";
+    }
+
+    // Destructor
+    ~Book() {
+        cout << "Destructor: \"" << title << "\" destroyed\n";
+    }
+
+    // Method to display book info
+    void display() const {
+        cout << "Title: " << title << ", Pages: " << pages << endl;
+    }
+};
+
+class BookShelf {
+private:
+    Book* books; // pointer to Book array
+    int size;
+
+public:
+    // Constructor: dynamically create array and initialize it
+    BookShelf() {
+        size = 3;
+        books = new Book[size]{
+            Book("C++ Fundamentals", 300),
+            Book("Data Structures", 450),
+            Book("Algorithms", 500)
+        };
+        cout << "BookShelf Constructor: Shelf initialized with " << size << " books\n";
+    }
+
+    // Destructor: clean up heap memory
+    ~BookShelf() {
+        delete[] books;
+        cout << "BookShelf Destructor: Shelf destroyed\n";
+    }
+
+    void displayBooks() const {
+        cout << "\nBooks on shelf:\n";
+        for (int i = 0; i < size; ++i) {
+            books[i].display();
+        }
+    }
+};
+
+int main() {
+    // Example 1: Array of Book objects (on stack)
+    cout << "-- Example 1: Array of Book objects --\n";
+    { // Using a block to control scope and destructor calls
+        Book library[3] = {
+            Book("C++ Fundamentals", 300),
+            Book("Data Structures", 450),
+            Book("Algorithms", 500)
+        };
+
+        cout << "\n--- Library Contents ---\n";
+        for (int i = 0; i < 3; ++i) {
+            library[i].display();
+        }
+        cout << "--- End of Example 1 ---\n";
+    } // Destructors of Book objects in library are called here
+
+    // Example 2: BookShelf with dynamic allocation (on heap)
+    cout << "\n-- Example 2: BookShelf object --\n";
+    {
+        BookShelf* shelf = new BookShelf(); // created on heap
+        shelf->displayBooks();
+        delete shelf; // cleanup
+        cout << "--- End of Example 2 ---\n";
+    }
+
+    return 0;
+}
+
+
+
+CODE FOR QUESTION 3;
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+class Car {
+private:
+    string model;
+    int year;
+    float price;
+
+public:
+    // Constructor
+    Car(string m = "Generic Car", int y = 2000, float p = 10000.0) : model(m), year(y), price(p) {
+        cout << "Car Constructor: " << model << " (" << year << ") $" << fixed << setprecision(2) << price << endl;
+    }
+
+    // Destructor
+    ~Car() {
+        cout << "Car Destructor: " << model << " destroyed" << endl;
+    }
+
+    // Method to input car data
+    void input() {
+        cout << "Enter model: ";
+        getline(cin, model);
+        cout << "Enter year: ";
+        cin >> year;
+        cout << "Enter price: ";
+        cin >> price;
+        cin.ignore(); // Consume the newline character
+    }
+
+    // Method to display car information
+    void display() const {
+        cout << "Model: " << model << ", Year: " << year << ", Price: $" << fixed << setprecision(2) << price << endl;
+    }
+};
+
+class CarCollection {
+private:
+    vector<Car> cars;
+
+public:
+    // Constructor
+    CarCollection(int n) {
+        cars.resize(n); // Resize the vector to hold n Car objects
+        cout << "CarCollection initialized with " << n << " cars" << endl;
+    }
+
+    // Destructor
+    ~CarCollection() {
+        cout << "CarCollection destroyed" << endl;
+    }
+
+    // Method to input car data from the user
+    void inputCars() {
+        for (int i = 0; i < cars.size(); ++i) {
+            cout << "Enter details for car " << i + 1 << ":" << endl;
+            cars[i].input();
+        }
+    }
+
+    // Method to display all car details
+    void displayCars() const {
+        cout << "\nCar Collection\n";
+        for (const auto& car : cars) {
+            car.display();
+        }
+    }
+};
+
+int main() {
+    int numCars;
+    cout << "How many cars do you want to add? ";
+    cin >> numCars;
+    cin.ignore(); // Consume the newline character
+
+    CarCollection myCars(numCars);
+    myCars.inputCars();
+    myCars.displayCars();
+
+    return 0;
+}
+
+
+CODE FOR QUESTION NUMBER4
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main() {
+    // Without cin.ignore()
+    cout << "-- Without cin.ignore() --\n";
+    {
+        int age;
+        string name;
+
+        cout << "Enter your age: ";
+        cin >> age;
+        getline(cin, name); // Problem: reads the newline left by cin >> age
+
+        cout << "Age: " << age << ", Name: " << name << endl;
+    }
+
+    // With cin.ignore()
+    cout << "\n-- With cin.ignore() --\n";
+    {
+        int age;
+        string name;
+
+        cout << "Enter your age: ";
+        cin >> age;
+        cin.ignore(); // Clears the leftover newline
+        cout << "Enter your full name: ";
+        getline(cin, name); // Works correctly now
+
+        cout << "Age: " << age << ", Name: " << name << endl;
+    }
+
+    return 0;
+}
+
+
+
+
+
+
